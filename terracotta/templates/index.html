@@ -1,3 +1,24 @@
-{{range .}}
-<p><strong>{{.Username}}</strong>: {{.Content}}</p>
-{{end}}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Terracotta</title>
+</head>
+<body>
+  <h1>Terracotta</h1>
+  <form method="POST" action="/post">
+    <input type="text" name="username" placeholder="Your name" required><br><br>
+    <textarea name="content" placeholder="What's on your mind?" required></textarea><br><br>
+    <button type="submit">Post</button>
+  </form>
+  <hr>
+  {{range .}}
+    <p>
+      <strong>{{.Username}}</strong> — <em>{{.TimeAgo}}</em><br>
+      {{.Content}}
+    </p>
+  {{else}}
+    <p>No posts yet.</p>
+    {{end}}
+</body>
+</html>
