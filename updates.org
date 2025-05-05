@@ -4,3 +4,7 @@
 * Day 1 (May 2, 2025)
 ** 12:01 AM
 So a large part of just doing this project is to teach myself how to use the Django framework, so that's what I plan to do. I'm going to get a basic template up first, and read the documentation.
+
+* Day 3 (May 4, 2025)
+** 8:55 PM
+So far: I do not like Django lol. I'm gonna mess with it a bit more, but I've been looking at Ruby and PHP for the next move. I'll see what works best for what.
