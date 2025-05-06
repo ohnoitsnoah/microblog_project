@@ -1,24 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Terracotta</title>
+    <meta charset="UTF-8">
+    <title>Terracotta Microblog</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Terracotta</h1>
-  <form method="POST" action="/post">
-    <input type="text" name="username" placeholder="Your name" required><br><br>
-    <textarea name="content" placeholder="What's on your mind?" required></textarea><br><br>
-    <button type="submit">Post</button>
-  </form>
-  <hr>
-  {{range .}}
-    <p>
-      <strong>{{.Username}}</strong> — <em>{{.TimeAgo}}</em><br>
-      {{.Content}}
-    </p>
+    <h1>Terracotta</h1>
+
+    <div>
+  {{if .Username}}
+    Logged in as {{.Username}} |
+    <a href="/logout">Logout</a>
   {{else}}
-    <p>No posts yet.</p>
+    <a href="/login">Login</a> | <a href="/register">Register</a>
     {{end}}
+    </div>
+    
+    {{range .}}
+    <div class="post">
+        <div class="post-header">{{.Username}}</div>
+        <div class="post-content">{{.Content}}</div>
+        <div class="post-meta">
+            Posted at {{.CreatedAt}} — Likes: {{.Likes}}
+        </div>
+    </div>
+    {{end}}
+
+    <form action="/post" method="POST">
+        <h2>New Post</h2>
+        <input type="text" name="username" placeholder="Your name" required />
+        <textarea name="content" placeholder="What's on your mind?" rows="4" required></textarea>
+        <button type="submit">Post</button>
+    </form>
 </body>
 </html>

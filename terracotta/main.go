@@ -12,13 +12,16 @@ import (
 )
 
 type Post struct {
-	Username string
-	Content  string
-	TimeAgo  string
+	ID        int
+	Content   string
+	Username  string
+	Likes     int
+	CreatedAt string
 }
 
 var db *sql.DB
 var templates = template.Must(template.ParseFiles("templates/index.html"))
+var tmpl = template.Must(template.ParseFiles("templates/index.html"))
 
 func main() {
 	var err error
@@ -42,13 +45,18 @@ func main() {
 
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/post", postHandler)
+	http.HandleFunc("/like", likePostHandler)
+	http.HandleFunc("/reply", replyHandler)
+	http.HandleFunc("/login", loginHandler)
+	http.HandleFunc("/register", registerHandler)
 
 	log.Println("Starting server on :8081...")
 	log.Fatal(http.ListenAndServe(":8081", nil))
 }
 
+//index handler
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("SELECT username, content, created_at FROM posts ORDER BY created_at DESC")
+	rows, err := db.Query("SELECT id, content, username, likes, created_at FROM posts ORDER BY created_at DESC")
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -57,31 +65,29 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	var posts []Post
 	for rows.Next() {
-		var username, content string
-		var createdAt time.Time
-		err := rows.Scan(&username, &content, &createdAt)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-
-		posts = append(posts, Post{
-			Username: username,
-			Content:  content,
-			TimeAgo:  timeAgo(createdAt),
-		})
-	}
-
-	templates.ExecuteTemplate(w, "index.html", posts)
+	var post Post
+	if err := rows.Scan(&post.ID, &post.Content, &post.Username, &post.Likes, &post.CreatedAt); err != nil {
+        log.Println("Scan error:", err)
+        continue
+    }
+    posts = append(posts, post)
 }
 
+	tmpl.ExecuteTemplate(w, "index.html", posts)
+}
+
+//Post Handler
 func postHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
-	username := r.FormValue("username")
+	username := getUsername(r)
+	if username == "" {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
 	content := r.FormValue("content")
 
 	if username == "" || content == "" {
@@ -98,6 +104,7 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
+// "[...] [time] ago" system
 func timeAgo(t time.Time) string {
 	diff := time.Since(t)
 	switch {
@@ -110,4 +117,68 @@ func timeAgo(t time.Time) string {
 	default:
 		return t.Format("Jan 2")
 	}
+}
+
+//Like handler
+func likePostHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	db, _ := sql.Open("sqlite3", "./posts.db")
+	defer db.Close()
+
+	_, err := db.Exec("UPDATE posts SET likes = likes + 1 WHERE id = ?", id)
+	if err != nil {
+		http.Error(w, "Failed to like post", 500)
+		return
+	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+//reply handler
+func replyHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		r.ParseForm()
+		db, _ := sql.Open("sqlite3", "./posts.db")
+
+		postID := r.FormValue("post_id")
+		username := r.FormValue("username")
+		content := r.FormValue("content")
+		timestamp := time.Now().Format("2006-01-02 15:04:05")
+
+		_, err := db.Exec("INSERT INTO replies (post_id, username, content, created_at) VALUES (?, ?, ?, ?)",
+			postID, username, content, timestamp)
+
+		if err != nil {
+			http.Error(w, "Failed to save reply", 500)
+			return
+		}
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+}
+
+//Login handler
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+    if r.Method == http.MethodGet {
+        t, _ := template.ParseFiles("templates/login.html")
+        t.Execute(w, nil)
+        return
+    }
+
+    // POST logic here later
+}
+
+//Register handler
+func registerHandler(w http.ResponseWriter, r *http.Request) {
+    if r.Method == http.MethodGet {
+        t, _ := template.ParseFiles("templates/register.html")
+        t.Execute(w, nil)
+        return
+    }
+
+    // POST logic here later
+}
+
+//get username handler
+func getUsername(r *http.Request) string {
+    // session lookup logic
+    return ""
 }
