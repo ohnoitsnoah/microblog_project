@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Terracotta Microblog</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <h1>Terracotta</h1>
 
     <div>
-  {{if .Username}}
-    Logged in as {{.Username}} |
-    <a href="/logout">Logout</a>
-  {{else}}
-    <a href="/login">Login</a> | <a href="/register">Register</a>
-    {{end}}
+        {{if .Username}}
+            Logged in as {{.Username}} |
+            <a href="/logout">Logout</a>
+        {{else}}
+            <a href="/login">Login</a> | <a href="/register">Register</a>
+        {{end}}
     </div>
-    
-    {{range .}}
+
+    <p>Post count: {{len .Posts}}</p>
+
+    {{range .Posts}}
     <div class="post">
         <div class="post-header">{{.Username}}</div>
         <div class="post-content">{{.Content}}</div>

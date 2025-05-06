@@ -19,6 +19,11 @@ type Post struct {
 	CreatedAt string
 }
 
+type PageData struct {
+	Username string
+	Posts    []Post
+}
+
 var db *sql.DB
 var templates = template.Must(template.ParseFiles("templates/index.html"))
 var tmpl = template.Must(template.ParseFiles("templates/index.html"))
@@ -47,8 +52,7 @@ func main() {
 	http.HandleFunc("/post", postHandler)
 	http.HandleFunc("/like", likePostHandler)
 	http.HandleFunc("/reply", replyHandler)
-	http.HandleFunc("/login", loginHandler)
-	http.HandleFunc("/register", registerHandler)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	log.Println("Starting server on :8081...")
 	log.Fatal(http.ListenAndServe(":8081", nil))
@@ -73,7 +77,11 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
     posts = append(posts, post)
 }
 
-	tmpl.ExecuteTemplate(w, "index.html", posts)
+	data := PageData{
+    Username: getUsername(r), // reads from cookie
+    Posts:    posts,          // your slice of Post structs
+}
+tmpl.ExecuteTemplate(w, "index.html", data)
 }
 
 //Post Handler
@@ -153,28 +161,6 @@ func replyHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
-}
-
-//Login handler
-func loginHandler(w http.ResponseWriter, r *http.Request) {
-    if r.Method == http.MethodGet {
-        t, _ := template.ParseFiles("templates/login.html")
-        t.Execute(w, nil)
-        return
-    }
-
-    // POST logic here later
-}
-
-//Register handler
-func registerHandler(w http.ResponseWriter, r *http.Request) {
-    if r.Method == http.MethodGet {
-        t, _ := template.ParseFiles("templates/register.html")
-        t.Execute(w, nil)
-        return
-    }
-
-    // POST logic here later
 }
 
 //get username handler

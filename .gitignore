@@ -2,3 +2,5 @@ terracotta/\#main.go\#
 terracotta/.\#main.go
 terracotta/posts.db
 *.db
+terracotta/old_main.go
+terracotta/templates/old_index.html

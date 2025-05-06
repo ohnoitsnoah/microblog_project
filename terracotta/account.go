@@ -1,14 +1,14 @@
 package main
 
 import (
-	"database/sql"
+	//"database/sql"
 	"net/http"
-	"text/template"
+	//"text/template"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-var templates = template.Must(template.ParseGlob("templates/*.html"))
+//var templates = template.Must(template.ParseGlob("templates/*.html"))
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
@@ -16,22 +16,29 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// POST logic
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		http.Error(w, "Error hashing password", http.StatusInternalServerError)
+		http.Error(w, "Password hashing error", 500)
 		return
 	}
 
 	_, err = db.Exec("INSERT INTO users (username, password_hash) VALUES (?, ?)", username, hashedPassword)
 	if err != nil {
-		http.Error(w, "Username may already be taken", http.StatusBadRequest)
+		http.Error(w, "Username may already exist", 400)
 		return
 	}
 
-	http.Redirect(w, r, "/login", http.StatusSeeOther)
+	// Set login cookie after successful registration
+	http.SetCookie(w, &http.Cookie{
+		Name:  "username",
+		Value: username,
+		Path:  "/",
+	})
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,33 +50,31 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	var passwordHash string
-	err := db.QueryRow("SELECT password_hash FROM users WHERE username = ?", username).Scan(&passwordHash)
+	var storedHash string
+	err := db.QueryRow("SELECT password_hash FROM users WHERE username = ?", username).Scan(&storedHash)
 	if err != nil {
-		http.Error(w, "Invalid login", http.StatusUnauthorized)
+		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 		return
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(passwordHash), []byte(password))
+	err = bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(password))
 	if err != nil {
-		http.Error(w, "Invalid login", http.StatusUnauthorized)
+		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 		return
 	}
 
-	// Set cookie
 	http.SetCookie(w, &http.Cookie{
 		Name:  "username",
 		Value: username,
 		Path:  "/",
 	})
-
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func getUsername(r *http.Request) string {
-	cookie, err := r.Cookie("username")
-	if err != nil {
-		return ""
-	}
-	return cookie.Value
-}
+//func getUsername(r *http.Request) string {
+//	cookie, err := r.Cookie("username")
+//	if err != nil {
+//		return ""
+//	}
+//	return cookie.Value
+//}
