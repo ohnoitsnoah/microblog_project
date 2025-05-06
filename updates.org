@@ -8,3 +8,7 @@ So a large part of just doing this project is to teach myself how to use the Dja
 * Day 3 (May 4, 2025)
 ** 8:55 PM
 So far: I do not like Django lol. I'm gonna mess with it a bit more, but I've been looking at Ruby and PHP for the next move. I'll see what works best for what.
+
+* Day 5 (May 6, 2025)
+** 3:46 PM
+I added a nice stylesheet, and it was working great, but it all went back downhill once I started to figure out a account system. I think I'm making good progress though, plus I'm getting a lot better with SQL.
