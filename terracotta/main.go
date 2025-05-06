@@ -25,7 +25,7 @@ type PageData struct {
 }
 
 var db *sql.DB
-var templates = template.Must(template.ParseFiles("templates/index.html"))
+var templates = template.Must(template.ParseGlob("templates/*.html"))
 var tmpl = template.Must(template.ParseFiles("templates/index.html"))
 
 func main() {

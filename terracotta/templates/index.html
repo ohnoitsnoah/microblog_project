@@ -31,7 +31,9 @@
 
     <form action="/post" method="POST">
         <h2>New Post</h2>
+	<label for="username">Username</label>
         <input type="text" name="username" placeholder="Your name" required />
+	<label for="content">Content</label>
         <textarea name="content" placeholder="What's on your mind?" rows="4" required></textarea>
         <button type="submit">Post</button>
     </form>
