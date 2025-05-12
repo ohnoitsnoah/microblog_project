@@ -71,10 +71,20 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-//func getUsername(r *http.Request) string {
-//	cookie, err := r.Cookie("username")
-//	if err != nil {
-//		return ""
-//	}
-//	return cookie.Value
-//}
+func getUsername(r *http.Request) string {
+	cookie, err := r.Cookie("username")
+	if err != nil {
+		return ""
+	}
+	return cookie.Value
+}
+
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:   "username",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1, // kills it
+	})
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}

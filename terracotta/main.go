@@ -48,6 +48,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	http.HandleFunc("/logout", logoutHandler)
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/register", registerHandler)
 	http.HandleFunc("/login", loginHandler)
@@ -166,7 +167,7 @@ func replyHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //get username handler
-func getUsername(r *http.Request) string {
-    // session lookup logic
-    return ""
-}
+//func getUsername(r *http.Request) string {
+//    // session lookup logic
+//    return ""
+//}
