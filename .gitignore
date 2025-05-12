@@ -5,3 +5,5 @@ terracotta/posts.db
 terracotta/old_main.go
 terracotta/templates/old_index.html
 /terracotta/tests
+terracotta/\#account.go\#
+terracotta/.\#account.go
