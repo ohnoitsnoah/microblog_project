@@ -26,7 +26,7 @@ type PageData struct {
 
 var db *sql.DB
 var templates = template.Must(template.ParseGlob("templates/*.html"))
-var tmpl = template.Must(template.ParseFiles("templates/index.html"))
+//var tmpl = template.Must(template.ParseFiles("templates/*.html"))
 
 func main() {
 	var err error
@@ -81,7 +81,7 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
     Username: getUsername(r), // reads from cookie
     Posts:    posts,          // your slice of Post structs
 }
-tmpl.ExecuteTemplate(w, "index.html", data)
+templates.ExecuteTemplate(w, "index.html", data)
 }
 
 //Post Handler
