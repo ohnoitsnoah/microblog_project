@@ -132,15 +132,43 @@ func timeAgo(t time.Time) string {
 
 //Like handler
 func likePostHandler(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Query().Get("id")
-	db, _ := sql.Open("sqlite3", "./posts.db")
-	defer db.Close()
+	if r.Method != http.MethodPost {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 
-	_, err := db.Exec("UPDATE posts SET likes = likes + 1 WHERE id = ?", id)
+	username := getUsername(r)
+	if username == "" {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	postID := r.FormValue("post_id")
+	if postID == "" {
+		http.Error(w, "Missing post ID", http.StatusBadRequest)
+		return
+	}
+
+	var userID int
+	err := db.QueryRow("SELECT id FROM users WHERE username = ?", username).Scan(&userID)
+	if err != nil {
+		http.Error(w, "User not found", 500)
+		return
+	}
+
+	var exists int
+	err = db.QueryRow("SELECT 1 FROM likes WHERE user_id = ? AND post_id = ?", userID, postID).Scan(&exists)
+	if err == nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	_, err = db.Exec("UPDATE posts SET likes = likes + 1 WHERE id = ?", postID)
 	if err != nil {
 		http.Error(w, "Failed to like post", 500)
 		return
 	}
+
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 

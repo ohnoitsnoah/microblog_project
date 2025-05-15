@@ -1,0 +1,23 @@
+body {
+  font-family: sans-serif;
+  margin: 2em auto;
+  max-width: 600px;
+  padding: 1em;
+  background-color: #f4f4f4;
+}
+
+textarea {
+  width: 100%;
+}
+
+button {
+  padding: 0.5em 1em;
+  margin-top: 0.5em;
+}
+
+.post {
+    margin-bottom: 1em;
+    padding: 0.5em;
+    background: white;
+    border-radius: 4px;
+}

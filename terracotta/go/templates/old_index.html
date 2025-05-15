@@ -8,21 +8,9 @@
 <body>
     <h1>Terracotta</h1>
 
-    <div>
-        {{if .Username}}
-            Logged in as {{.Username}} |
-            <a href="/logout">Logout</a>
-        {{else}}
-            <a href="/login">Login</a> | <a href="/register">Register</a>
-        {{end}}
-    </div>
-
-    <h2>Timeline</h2>
-    <p>Post count: {{len .Posts}}</p>
-
-    {{range .Posts}}
+    {{range .}}
     <div class="post">
-        <div class="post-header">{{.Username}}</div>
+        <div class="post-header"><strong>{{.Username}}</strong></div>
         <div class="post-content">{{.Content}}</div>
         <div class="post-meta">
             Posted at {{.CreatedAt}} — Likes: {{.Likes}}
@@ -32,8 +20,8 @@
 
     <form action="/post" method="POST">
         <h2>New Post</h2>
-	<label for="content">Content</label>
-        <textarea name="content" id="content" placeholder="What's on your mind?" rows="4" required></textarea>
+        <input type="text" name="username" placeholder="Your name" required />
+        <textarea name="content" placeholder="What's on your mind?" rows="4" required></textarea>
         <button type="submit">Post</button>
     </form>
 </body>
