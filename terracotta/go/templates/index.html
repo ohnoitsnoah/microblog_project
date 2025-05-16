@@ -2,23 +2,23 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Terracotta Microblog</title>
+    <title>terracotta microblog</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h1>Terracotta</h1>
+    <h1>terracotta</h1>
 
     <div>
         {{if .Username}}
             Logged in as {{.Username}} |
-            <a href="/logout">Logout</a>
+            <a href="/logout">logout</a>
         {{else}}
-            <a href="/login">Login</a> | <a href="/register">Register</a>
+            <a href="/login">login</a> | <a href="/register">register</a>
         {{end}}
     </div>
-
-    <h2>Timeline</h2>
-    <p>Post count: {{len .Posts}}</p>
+    <hr>
+    <h2>timeline</h2>
+    <p>post count: {{len .Posts}}</p>
 
     {{range .Posts}}
     <div class="post">
